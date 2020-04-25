@@ -1,0 +1,131 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Movie Listings</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="http://cdn.asimplify.com/lightboxgallery/css/lightboxgallery.css">
+  <link rel="stylesheet" href="http://cdn.asimplify.com/lightboxgallery/css/lightboxgallery-min.css">
+  <script src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.14.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.0/angular-animate.min.js"></script>
+  <script src="script.js"></script>
+  <!-- <script>
+        angular.module('MovieApp', ['ui.bootstrap'])
+        .controller("MovieAppCtrl",
+            [
+                '$http', '$scope',
+                function($http, $scope) {
+                  $scope.filteredTodos = []
+                    ,$scope.currentPage = 1
+                    ,$scope.numPerPage = 2
+                    ,$scope.maxSize = 15;
+                    
+                    $scope.makeTodos = function() {
+                      $scope.todos = [];
+                      for(i=0;i<$scope.MovieData.Search.length;i++) {
+                        $scope.todos.push({ text:$scope.MovieData.Search[i].Title, done:false});
+                        console.log($scope.MovieData.Search[i].Title);
+                      }
+                      var ch = '2'; 
+                      
+                    };
+  
+  $scope.$watch('currentPage + numPerPage', function() {
+    var begin = (($scope.currentPage - 1) * $scope.numPerPage)
+    , end = begin + $scope.numPerPage;
+    
+    $scope.filteredTodos = $scope.todos.slice(begin, end);
+    console.log($scope.filteredTodos); 
+  });
+  
+                    $scope.MovieData = [];
+                    $scope.Search = null;
+                    $scope.GetMoviesData = function() {
+                        try {
+                            $http({
+                                url: 'http://www.omdbapi.com/?apikey=1c7ec76a&s='+$scope.Search,
+                                method: "GET",
+                            }).then(
+                                function(payload) {
+                                    $scope.MovieData = payload.data;
+                                    // console.log($scope.MovieData.Search)
+                                    $scope.makeTodos(); 
+                                },
+                                function(){
+								alert("Something is wrong. Please try again.");
+								});
+                        } catch (error) {
+                            alert("Exception occured while fetching movie data.");
+                        }
+                    }
+                }
+            ]);
+        angular.element(function() {
+            angular.bootstrap(document, ['MovieApp']);
+        });
+    </script> -->
+</head>
+<body ng-controller='MovieAppCtrl'>
+<div class="container">
+  <h2>Movie Listings</h2>
+<div class="row">
+    <div class="form-group">
+      <div class="col-sm-4">          
+        <input type="name" class="form-control" placeholder="Enter movie name" ng-model="Search" ng-keyup="GetMoviesData()">
+      </div>
+	  <div class="col-sm-4">
+        <button type="submit" class="btn btn-default" ng-click="GetMoviesData()">Submit</button>
+      </div>
+    </div>
+	</div>
+	<div ng-hide="MovieData.Search && MovieData.Search.Response !=='True' " class="col-md-4 alert alert-info" style="margin-top:10px;">
+  <strong>Info!</strong> No data found.
+</div>
+	</div>
+<div class="container" style="margin-top:10px;">
+      <div class="lightboxgallery-gallery clearfix">
+        <a ng-repeat="movie in filteredTodos" class="lightboxgallery-gallery-item" target="_blank" ng-href="{{movie.Poster}}" data-title="{{movie.Title}}" data-link="http://www.imdb.com/title/{{movie.imdbID}}" data-alt="{{movie.Title}}">
+          <div class="col-md-4">
+            <img ng-src="{{movie.Poster}}" title="{{movie.Title}}" alt="{{movie.Title}}">
+            <div class="lightboxgallery-gallery-item-content">
+              <span class="lightboxgallery-gallery-item-title">{{movie.Title}}</span>
+            </div>
+          </div>
+        </a>
+  </div>
+  <div>
+    total-items : {{totalItems}}
+  </div>
+  <h1>Todos</h1>
+    <h4>{{todos.length}} total</h4>
+    <ul>
+      <li ng-repeat="todo in filteredTodos">{{todo.Title}}</li>
+    </ul>
+    <uib-pagination 
+      ng-model="currentPage"
+      total-items=10
+      max-size="maxSize"  
+      boundary-links="true"
+      ng-change="MovieAppCtrl.find()"></pagination>
+</div>
+
+
+  
+<script src="http://cdn.asimplify.com/lightboxgallery/js/lightboxjs-custom.js"></script>
+  <script type="text/javascript">
+  jQuery(function($) {
+    $(document).on('click', '.lightboxgallery-gallery-item', function(event) {
+      event.preventDefault();
+      $(this).lightboxgallery({
+        showCounter: true,
+        showTitle: true,
+        showDescription: true
+      });
+    });
+  });
+  </script>
+</body>
+</html>
